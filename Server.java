@@ -1,5 +1,7 @@
-import java.net.*;
-import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.io.BufferedOutputStream;
+import java.io.BufferedInputStream;
 
 public class Server {
 
