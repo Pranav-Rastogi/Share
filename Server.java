@@ -7,7 +7,7 @@ public class Server {
 
 	private ServerSocket server_socket;
 	private Socket socket;
-	private BufferedInputStream output;
+	private BufferedInputStream output, p_output;
 	private BufferedOutputStream input;
 	private byte[] b = new byte[16000000];
 	private int n;
@@ -81,10 +81,13 @@ public class Server {
 	private void setupStreams() throws IOException {
 		output = new BufferedOutputStream(socket.getOutputStream(), 16000000);
 		output.flush();
+		p_output = new BufferedInputStream(new FileStream("new"));
 		input = new BufferedInputStream(socket.getInputStream(), 16000000);
 	}
 
 	private void transferData() throws IOException {
-		
+		while(n=input.read(b, 0, 16000000) != -1) {
+			output.write(b, 0, n);
+		}
 	}
 }
