@@ -1,5 +1,11 @@
-import java.net.*;
-import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.EOFException;
+
 public class Server {
 
 	private static ServerSocket server_socket;
@@ -84,6 +90,18 @@ public class Server {
 	}
 
 	/*
+	 *
+	 * The read() method takes data from BufferedInputStream input and writes
+	 * it to the byte array b from element 0 to 16000000-1. The number of bytes
+	 * read are stored in n.
+	 *
+	 * The write() method writes data from b to BufferedOutputStream output
+	 * from position 0 to the number of bytes written.
+	 *
+	 * The write() method writes only till n as writting the whole array
+	 * creates problem during the last iteration when all array elements are
+	 * not reinitialized and the last few elemnts contain leftover values from
+	 * the last iteration.
 	 *
 	 */
 	private static void transferData() throws IOException {
