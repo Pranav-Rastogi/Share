@@ -1,16 +1,13 @@
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.io.BufferedOutputStream;
-import java.io.BufferedInputStream;
-
+import java.net.*;
+import java.io.*;
 public class Server {
 
-	private ServerSocket server_socket;
-	private Socket socket;
-	private BufferedInputStream output, p_output;
-	private BufferedOutputStream input;
-	private byte[] b = new byte[16000000];
-	private int n;
+	private static ServerSocket server_socket;
+	private static Socket socket;
+	private static BufferedOutputStream output, p_output;
+	private static BufferedInputStream input;
+	private static byte[] b = new byte[16000000];
+	private static int n;
 
 	/*
 	 *
@@ -22,7 +19,7 @@ public class Server {
 	 */
 	public static void main(String args[]) {
 		int port = 69;
-		int backlog = 10
+		int backlog = 10;
 
 		try {
 			server_socket = new ServerSocket(port, backlog);
@@ -35,7 +32,7 @@ public class Server {
 				} catch(EOFException eofe) {
 
 				} finally {
-					closeCrap();
+					//closeCrap();
 				}
 			}
 
@@ -56,7 +53,7 @@ public class Server {
 	 * converts it to String.
 	 *
 	 */
-	private void waitForConnection() throws IOException {
+	private static void waitForConnection() throws IOException {
 		System.out.println("Waiting for connection...");
 		socket = server_socket.accept();
 		String host_name = socket.getInetAddress().getHostName();
@@ -78,15 +75,19 @@ public class Server {
 	 * buffer. There is no flush method for the input stream.
 	 *
 	 */
-	private void setupStreams() throws IOException {
+	private static void setupStreams() throws IOException {
 		output = new BufferedOutputStream(socket.getOutputStream(), 16000000);
 		output.flush();
-		p_output = new BufferedInputStream(new FileStream("new"));
+		p_output = new BufferedOutputStream(new FileOutputStream("new"));
+		p_output.flush();
 		input = new BufferedInputStream(socket.getInputStream(), 16000000);
 	}
 
-	private void transferData() throws IOException {
-		while(n=input.read(b, 0, 16000000) != -1) {
+	/*
+	 *
+	 */
+	private static void transferData() throws IOException {
+		while((n=input.read(b, 0, 16000000)) != -1) {
 			output.write(b, 0, n);
 		}
 	}
