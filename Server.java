@@ -10,7 +10,7 @@ public class Server {
 
 	private static ServerSocket server_socket;
 	private static Socket socket;
-	private static BufferedOutputStream output, p_output;
+	private static BufferedOutputStream p_output;
 	private static BufferedInputStream input;
 	private static byte[] b = new byte[16000000];
 	private static int n;
@@ -33,12 +33,12 @@ public class Server {
 			while(true) {
 				try {
 					waitForConnection();
-					setupStreams();	
+					setupStreams();
 					transferData();
 				} catch(EOFException eofe) {
 
 				} finally {
-					//closeCrap();
+					closeCrap();
 				}
 			}
 
@@ -82,10 +82,7 @@ public class Server {
 	 *
 	 */
 	private static void setupStreams() throws IOException {
-		output = new BufferedOutputStream(socket.getOutputStream(), 16000000);
-		output.flush();
-		p_output = new BufferedOutputStream(new FileOutputStream("new"));
-		p_output.flush();
+		p_output = new BufferedOutputStream(new FileOutputStream("C:/Users/Kritika/Desktop/new"));
 		input = new BufferedInputStream(socket.getInputStream(), 16000000);
 	}
 
@@ -106,7 +103,20 @@ public class Server {
 	 */
 	private static void transferData() throws IOException {
 		while((n=input.read(b, 0, 16000000)) != -1) {
-			output.write(b, 0, n);
+			p_output.write(b, 0, n);
 		}
+	}
+
+	/*
+	 *
+	 * closeCrap() Closes all BufferedInputStream, BufferedOutputStream,
+	 * ServerSocket and Socket after all the work is done. 
+	 *
+	 */
+	private static void closeCrap() throws IOException {
+		server_socket.close();
+		socket.close();
+		p_output.close();
+		input.close();
 	}
 }
