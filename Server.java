@@ -33,12 +33,12 @@ public class Server {
 			while(true) {
 				try {
 					waitForConnection();
-					setupStreams();	
+					setupStreams();
 					transferData();
 				} catch(EOFException eofe) {
 
 				} finally {
-					//closeCrap();
+					closeCrap();
 				}
 			}
 
@@ -108,5 +108,19 @@ public class Server {
 		while((n=input.read(b, 0, 16000000)) != -1) {
 			output.write(b, 0, n);
 		}
+	}
+
+	/*
+	 *
+	 * closeCrap() Closes all BufferedInputStream, BufferedOutputStream,
+	 * ServerSocket and Socket after all the work is done. 
+	 *
+	 */
+	private static void closeCrap() throws IOException {
+		server_socket.close();
+		socket.close();
+		output.close();
+		p_output.close();
+		input.close();
 	}
 }
