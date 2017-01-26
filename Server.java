@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.BufferedOutputStream;
@@ -246,5 +245,4 @@ public class Server {
 		p_output.close();
 		input.close();
 	}
->>>>>>> 17d54c2e7a7b06dbb33eafd40068f88ec46f9d72
 }
