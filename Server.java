@@ -8,16 +8,15 @@ import java.io.EOFException;
 
 public class Server {
 
+	private static int buffer = 16000000;
 	private static ServerSocket server_socket;
 	private static Socket socket;
 	private static BufferedOutputStream p_output;
 	private static BufferedInputStream input;
-	private static byte[] b = new byte[16000000];
+	private static byte[] b = new byte[buffer];
 	private static int n;
 
 	/*
-	 *
-	 * @Author: Pranav Rastogi
 	 *
 	 * ServerSocket class sets up a server on the local machine that listens on
 	 * port number 69 and can support a backlog of 10 users.
@@ -82,8 +81,11 @@ public class Server {
 	 *
 	 */
 	private static void setupStreams() throws IOException {
-		p_output = new BufferedOutputStream(new FileOutputStream("C:/Users/Kritika/Desktop/new"));
-		input = new BufferedInputStream(socket.getInputStream(), 16000000);
+		System.out.println("Setting output stream...");
+		p_output = new BufferedOutputStream(new FileOutputStream("C:/Users/Kritika/Desktop/new"), buffer);
+		System.out.println("Output stream set\nSetting up input stream...");
+		input = new BufferedInputStream(socket.getInputStream(), buffer);
+		System.out.println("Input stream set");
 	}
 
 	/*
@@ -102,7 +104,7 @@ public class Server {
 	 *
 	 */
 	private static void transferData() throws IOException {
-		while((n=input.read(b, 0, 16000000)) != -1) {
+		while((n=input.read(b, 0, buffer)) != -1) {
 			p_output.write(b, 0, n);
 		}
 	}
