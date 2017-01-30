@@ -29,18 +29,17 @@ public class Server {
 		try {
 			server_socket = new ServerSocket(port, backlog);
 
-			while(true) {
-				try {
+			try {
+				while(true) {
 					waitForConnection();
 					setupStreams();
 					transferData();
-				} catch(EOFException eofe) {
-
-				} finally {
-					closeCrap();
 				}
+			} catch(EOFException eofe) {
+				System.out.println("Error: " + eofe.printStackTrace());
+			} finally {
+				closeCrap();
 			}
-
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
@@ -82,7 +81,7 @@ public class Server {
 	 */
 	private static void setupStreams() throws IOException {
 		System.out.println("Setting output stream...");
-		p_output = new BufferedOutputStream(new FileOutputStream("C:/Users/Kritika/Desktop/new"), buffer);
+		p_output = new BufferedOutputStream(new FileOutputStream("C:/Users/Dell/Desktop/new"), buffer);
 		System.out.println("Output stream set\nSetting up input stream...");
 		input = new BufferedInputStream(socket.getInputStream(), buffer);
 		System.out.println("Input stream set");
