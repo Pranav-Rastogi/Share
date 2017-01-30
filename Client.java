@@ -7,19 +7,22 @@ import java.util.Scanner;
 
 public class Client {
 
-	private static int buffer = 16000000;
-	private static Socket socket;
+	private static Scanner kb = new Scanner(System.in);
 	private static BufferedOutputStream output;
 	private static BufferedInputStream p_input;
+	private static int buffer = 16000000;
 	private static byte[] b = new byte[buffer];
+	private static Socket socket;
 	private static int n;
-	private static Scanner kb = new Scanner(System.in);
 
 	public static void main(String args[]) {
 		int port = 69;
 
+		System.out.print("Enter The Server IP Address: ");
+		String ip = kb.nextLine();
+
 		try {
-			socket = new Socket("127.0.0.1", port);
+			socket = new Socket(ip, port);
 
 			String file = getTransferFile();
 			setUpStreams(file);
@@ -30,6 +33,12 @@ public class Client {
 		}
 	}
 
+	/*
+	 *
+	 * The getTransferFile() method takes the URL of the file to be transfered
+	 * as String and then returns the URL as a String.
+	 *
+	 */
 	private static String getTransferFile() {
 		System.out.print("Enter file url: ");
 		String file = kb.nextLine();
@@ -37,6 +46,13 @@ public class Client {
 		return file;
 	}
 
+	/*
+	 *
+	 * The setUpStreams() method sets up the BufferedInputStream p_input and
+	 * BufferedOutputStream output. The p_input takes a FileInputStream pointing
+	 * 
+	 *
+	 */
 	private static void setUpStreams(String file) throws IOException {
 		p_input = new BufferedInputStream(new FileInputStream(file), buffer);
 		output = new BufferedOutputStream(socket.getOutputStream(), buffer);
