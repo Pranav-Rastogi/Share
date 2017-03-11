@@ -4,14 +4,15 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Scanner;
+import javax.swing.JFileChooser;
 
 public class Client {
 
-	private static Scanner kb = new Scanner(System.in);
+	private static final Scanner kb = new Scanner(System.in);
 	private static BufferedOutputStream output;
 	private static BufferedInputStream p_input;
-	private static int buffer = 16000000;
-	private static byte[] b = new byte[buffer];
+	private static final int buffer = 16000000;
+	private static final byte[] b = new byte[buffer];
 	private static Socket socket;
 	private static int n;
 
@@ -40,8 +41,17 @@ public class Client {
 	 *
 	 */
 	private static String getTransferFile() {
-		System.out.print("Enter file url: ");
-		String file = kb.nextLine();
+		//System.out.print("Enter file url: ");
+		//String file = kb.nextLine();
+
+		String file = "";
+
+		JFileChooser fc = new JFileChooser();
+		int ans = fc.showOpenDialog(null);
+		if(ans == JFileChooser.APPROVE_OPTION)
+		{
+			file = fc.getSelectedFile().getAbsolutePath();
+		}
 
 		return file;
 	}
