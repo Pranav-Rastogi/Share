@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.EOFException;
+import javax.swing.JFileChooser;
 
 public class Server {
 
@@ -36,7 +37,7 @@ public class Server {
 					transferData();
 				}
 			} catch(EOFException eofe) {
-				System.out.println("Error: " + eofe.printStackTrace());
+				System.out.println("Error: " + eofe);
 			} finally {
 				closeCrap();
 			}
@@ -81,7 +82,9 @@ public class Server {
 	 */
 	private static void setupStreams() throws IOException {
 		System.out.println("Setting output stream...");
-		p_output = new BufferedOutputStream(new FileOutputStream("C:/Users/Dell/Desktop/new"), buffer);
+		String dir = getDirectory();
+		p_output = new BufferedOutputStream(new FileOutputStream(dir + "/new"), buffer);
+
 		System.out.println("Output stream set\nSetting up input stream...");
 		input = new BufferedInputStream(socket.getInputStream(), buffer);
 		System.out.println("Input stream set");
@@ -119,5 +122,25 @@ public class Server {
 		socket.close();
 		p_output.close();
 		input.close();
+	}
+
+	/*
+	 *
+	 * Use a JFileChooser to select the directory where the server wishes to
+	 * save the files that will be sent by the client.
+	 *
+	 */
+	private static String getDirectory() {
+		String file = "";
+
+		JFileChooser fc = new JFileChooser();
+		fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		int ans = fc.showOpenDialog(null);
+
+		if(ans == JFileChooser.APPROVE_OPTION) {
+			file = fc.getSelectedFile().getAbsolutePath();
+		}
+
+		return file;
 	}
 }
