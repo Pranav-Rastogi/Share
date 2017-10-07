@@ -57,7 +57,6 @@ public class Client {
 	 *
 	 * The setUpStreams() method sets up the BufferedInputStream p_input and
 	 * BufferedOutputStream output. The p_input takes a FileInputStream pointing
-	 * 
 	 *
 	 */
 	private static void setUpStreams(String file) throws IOException {
