@@ -41,9 +41,6 @@ public class Client {
 	 *
 	 */
 	private static String getTransferFile() {
-		//System.out.print("Enter file url: ");
-		//String file = kb.nextLine();
-
 		String file = "";
 
 		JFileChooser fc = new JFileChooser();
