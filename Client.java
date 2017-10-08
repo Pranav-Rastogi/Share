@@ -1,10 +1,7 @@
+import javax.swing.*;
+import java.io.*;
 import java.net.Socket;
-import java.io.BufferedOutputStream;
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Scanner;
-import javax.swing.JFileChooser;
 
 public class Client {
 
@@ -27,6 +24,7 @@ public class Client {
 
 			String file = getTransferFile();
 			setUpStreams(file);
+			sendFileName(file);
 			transferData();
 			closeCrap();
 		} catch(IOException ioe) {
@@ -62,6 +60,13 @@ public class Client {
 	private static void setUpStreams(String file) throws IOException {
 		p_input = new BufferedInputStream(new FileInputStream(file), buffer);
 		output = new BufferedOutputStream(socket.getOutputStream(), buffer);
+	}
+
+	private static void sendFileName(String file) throws IOException {
+		String fileName = new File(file).getName();
+		output.write(fileName.getBytes("UTF-8"));
+		output.write(0);
+		output.flush();
 	}
 
 	private static void transferData() throws IOException {

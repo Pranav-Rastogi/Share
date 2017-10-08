@@ -1,10 +1,6 @@
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.EOFException;
 import javax.swing.JFileChooser;
 
 public class Server {
@@ -21,7 +17,7 @@ public class Server {
 	 *
 	 * ServerSocket class sets up a server on the local machine that listens on
 	 * port number 69 and can support a backlog of 10 users.
-	 * 
+	 *
 	 */
 	public static void main(String args[]) {
 		int port = 69;
@@ -74,20 +70,47 @@ public class Server {
 	 * The socket.getOutputStream() and socket.getInputStream()
 	 * methods return the respective stream objects for the
 	 * local machine.
-	 * 
+	 *
 	 * The flush() method flushes the output stream thus clearing
 	 * the output buffer in case there is some data left in the
 	 * buffer. There is no flush method for the input stream.
 	 *
 	 */
 	private static void setupStreams() throws IOException {
-		System.out.println("Setting output stream...");
-		String dir = getDirectory();
-		p_output = new BufferedOutputStream(new FileOutputStream(dir + "/new"), buffer);
-
 		System.out.println("Output stream set\nSetting up input stream...");
 		input = new BufferedInputStream(socket.getInputStream(), buffer);
 		System.out.println("Input stream set");
+
+		System.out.println("Setting Directory");
+		String dir = getDirectory();
+		System.out.printf("Target directory is '%s'%n", dir);
+
+		System.out.println("Getting source file name");
+		String filename = readFilename();
+		System.out.printf("Source file name is '%s'%n", filename);
+
+		System.out.println("Setting output stream...");
+		p_output = new BufferedOutputStream(new FileOutputStream(dir + "/" + filename), buffer);
+		System.out.println("Output stream set");
+	}
+
+	/**
+	 * Reads source file name from the inputstream.  The start of the input stream is expected to be the UTF-8 encoded
+	 * filename terminated by a null byte.
+	 *
+	 * This method reads from the input stream untill a null byte is reached and returns the result as a string.
+	 *
+	 * @return The source file name
+	 * @throws IOException
+	 */
+	private static String readFilename() throws IOException {
+		int b;
+		ByteArrayOutputStream filenameBuffer = new ByteArrayOutputStream();
+		while ((b = input.read()) != 0) {
+			filenameBuffer.write(b);
+
+		}
+		return filenameBuffer.toString("UTF-8");
 	}
 
 	/*
@@ -114,7 +137,7 @@ public class Server {
 	/*
 	 *
 	 * closeCrap() Closes all BufferedInputStream, BufferedOutputStream,
-	 * ServerSocket and Socket after all the work is done. 
+	 * ServerSocket and Socket after all the work is done.
 	 *
 	 */
 	private static void closeCrap() throws IOException {
