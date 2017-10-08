@@ -1,7 +1,8 @@
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.io.DataInputStream;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.EOFException;
@@ -12,10 +13,9 @@ public class Server {
 	private static int buffer = 16000000;
 	private static ServerSocket server_socket;
 	private static Socket socket;
-	private static BufferedOutputStream p_output;
 	private static BufferedInputStream input;
-	private static byte[] b = new byte[buffer];
-	private static int n;
+
+
 
 	/*
 	 *
@@ -34,7 +34,6 @@ public class Server {
 				while(true) {
 					waitForConnection();
 					setupStreams();
-					transferData();
 				}
 			} catch(EOFException eofe) {
 				System.out.println("Error: " + eofe);
@@ -65,6 +64,7 @@ public class Server {
 		System.out.println("Connected to " + host_name);
 	}
 
+	
 	/*
 	 *
 	 * Sets up the output and input streams of the server.
@@ -78,38 +78,26 @@ public class Server {
 	 * The flush() method flushes the output stream thus clearing
 	 * the output buffer in case there is some data left in the
 	 * buffer. There is no flush method for the input stream.
+	 * 
+	 * I have changed this to define our own protocol using DataInput streams
+	 * the client sends the file name and then the file we simply use Files.copy to copy this to the selected 
+	 * directory. saving a lot of code. 
 	 *
 	 */
 	private static void setupStreams() throws IOException {
 		System.out.println("Setting output stream...");
 		String dir = getDirectory();
-		p_output = new BufferedOutputStream(new FileOutputStream(dir + "/new"), buffer);
-
 		System.out.println("Output stream set\nSetting up input stream...");
 		input = new BufferedInputStream(socket.getInputStream(), buffer);
+		try (DataInputStream d = new DataInputStream(input)) {
+		    String fileName = d.readUTF();
+		    System.out.println("Copying File "+fileName );
+		    Files.copy(d,Paths.get(dir, fileName));
+		}
 		System.out.println("Input stream set");
 	}
 
-	/*
-	 *
-	 * The read() method takes data from BufferedInputStream input and writes
-	 * it to the byte array b from element 0 to 16000000-1. The number of bytes
-	 * read are stored in n.
-	 *
-	 * The write() method writes data from b to BufferedOutputStream output
-	 * from position 0 to the number of bytes written.
-	 *
-	 * The write() method writes only till n as writting the whole array
-	 * creates problem during the last iteration when all array elements are
-	 * not reinitialized and the last few elemnts contain leftover values from
-	 * the last iteration.
-	 *
-	 */
-	private static void transferData() throws IOException {
-		while((n=input.read(b, 0, buffer)) != -1) {
-			p_output.write(b, 0, n);
-		}
-	}
+
 
 	/*
 	 *
@@ -120,7 +108,6 @@ public class Server {
 	private static void closeCrap() throws IOException {
 		server_socket.close();
 		socket.close();
-		p_output.close();
 		input.close();
 	}
 
