@@ -1,3 +1,5 @@
+import javax.swing.*;
+import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.io.BufferedOutputStream;
@@ -6,7 +8,6 @@ import java.io.File;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.Scanner;
-import javax.swing.JFileChooser;
 
 public class Client {
 
@@ -24,17 +25,18 @@ public class Client {
 		System.out.print("Enter The Server IP Address: ");
 		String ip = kb.nextLine();
 		
-			try {
-				socket = new Socket(ip, port);
+		try {
+			socket = new Socket(ip, port);
 
-				String file = getTransferFile();
-				String fileName = getFileName(file);
-				setUpStreams(fileName,file);
-				transferData();
-				closeCrap();
-			} catch (IOException ioe) {
-				ioe.printStackTrace();
-			}
+			String file = getTransferFile();
+			setUpStreams(file);
+			sendFileName(file);
+			transferData();
+			closeCrap();
+		} catch(IOException ioe) {
+			ioe.printStackTrace();
+		}
+
 	}
 
 	/*
@@ -83,6 +85,13 @@ public class Client {
 
 		
 		
+	}
+
+	private static void sendFileName(String file) throws IOException {
+		String fileName = new File(file).getName();
+		output.write(fileName.getBytes("UTF-8"));
+		output.write(0);
+		output.flush();
 	}
 
 
