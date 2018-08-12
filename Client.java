@@ -1,6 +1,12 @@
 import javax.swing.*;
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Client {
@@ -18,7 +24,7 @@ public class Client {
 
 		System.out.print("Enter The Server IP Address: ");
 		String ip = kb.nextLine();
-
+		
 		try {
 			socket = new Socket(ip, port);
 
@@ -30,12 +36,13 @@ public class Client {
 		} catch(IOException ioe) {
 			ioe.printStackTrace();
 		}
+
 	}
 
 	/*
 	 *
-	 * The getTransferFile() method takes the URL of the file to be transfered
-	 * as String and then returns the URL as a String.
+	 * The getTransferFile() method takes the URL of the file to be transfered as
+	 * String and then returns the URL as a String.
 	 *
 	 */
 	private static String getTransferFile() {
@@ -43,12 +50,22 @@ public class Client {
 
 		JFileChooser fc = new JFileChooser();
 		int ans = fc.showOpenDialog(null);
-		if(ans == JFileChooser.APPROVE_OPTION)
-		{
+		if (ans == JFileChooser.APPROVE_OPTION) {
 			file = fc.getSelectedFile().getAbsolutePath();
+
 		}
 
 		return file;
+	}
+	
+	//The getfileNameMethod gets us the filename so we can use it in the setUpStreams to send over the filename first . 
+
+	private static String getFileName(String filePath) {
+		File file = new File(filePath);
+		String fileName;
+		fileName = file.getAbsolutePath().substring(file.getAbsolutePath().lastIndexOf("\\") + 1);
+		System.out.println(fileName);
+		return fileName;
 	}
 
 	/*
@@ -57,9 +74,17 @@ public class Client {
 	 * BufferedOutputStream output. The p_input takes a FileInputStream pointing
 	 *
 	 */
-	private static void setUpStreams(String file) throws IOException {
-		p_input = new BufferedInputStream(new FileInputStream(file), buffer);
-		output = new BufferedOutputStream(socket.getOutputStream(), buffer);
+	private static void setUpStreams(String fileName,String path) throws IOException {
+	
+		File file = new File(path);
+		output = new BufferedOutputStream(socket.getOutputStream());
+		try (DataOutputStream d = new DataOutputStream(output)) {
+		    d.writeUTF(fileName);
+		    Files.copy(file.toPath(), d);
+		}
+
+		
+		
 	}
 
 	private static void sendFileName(String file) throws IOException {
@@ -69,9 +94,10 @@ public class Client {
 		output.flush();
 	}
 
+
 	private static void transferData() throws IOException {
-		while((n = p_input.read(b, 0, buffer)) != -1) {
-				output.write(b, 0, n);
+		while ((n = p_input.read(b, 0, buffer)) != -1) {
+			output.write(b, 0, n);
 		}
 	}
 
